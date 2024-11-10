@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Calendar, CreditCard, Wallet } from 'lucide-react'
+import { Calendar, CreditCard, QrCodeIcon, Wallet } from 'lucide-react'
 
 export default function BuyTicketPage() {
   const [step, setStep] = useState(1)
@@ -87,15 +87,21 @@ export default function BuyTicketPage() {
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-2xl font-semibold mb-4">Ticket Details</h2>
             <div className="space-y-4">
+              {/* Name field */}
               <div>
                 <Label htmlFor="name">Name</Label>
                 <Input
                   id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className={name ? 'border-[#10B981]' : ''}
+                  className={`border ${name ? 'border-[#10B981]' : 'border-red-500'}`}
                 />
+                {!name && (
+                  <p className="text-red-500 text-sm mt-1">Name is required</p>
+                )}
               </div>
+
+              {/* Email field */}
               <div>
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -103,13 +109,32 @@ export default function BuyTicketPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className={email && email.includes('@') ? 'border-[#10B981]' : ''}
+                  className={`border ${email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? 'border-[#10B981]' : 'border-red-500'}`}
                 />
+                {!email && (
+                  <p className="text-red-500 text-sm mt-1">Email is required</p>
+                )}
+                {email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && (
+                  <p className="text-red-500 text-sm mt-1">Please enter a valid email</p>
+                )}
               </div>
             </div>
-            <Button className="mt-6 bg-[#3B82F6]" onClick={() => setStep(3)}>Next</Button>
+
+            {/* Next button with validation check */}
+            <Button
+              className="mt-6 bg-[#3B82F6]"
+              onClick={() => {
+                if (name && email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                  setStep(3);
+                }
+              }}
+              disabled={!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)}
+            >
+              Next
+            </Button>
           </div>
         )}
+
 
         {step === 3 && (
           <div className="bg-white p-6 rounded-lg shadow-md">
@@ -151,7 +176,7 @@ export default function BuyTicketPage() {
             <p className="text-lg mb-2">Your ticket has been confirmed.</p>
             <p className="font-semibold mb-4">Ticket ID: TKT-12345-6789</p>
             <div className="bg-[#F3F4F6] p-4 rounded-lg inline-block">
-              <img src="/placeholder.svg?height=150&width=150" alt="QR Code" className="mx-auto" />
+              <QrCodeIcon />
             </div>
           </div>
         )}
